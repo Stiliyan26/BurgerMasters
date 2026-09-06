@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+enum Category {
+  BURGER
+  FRIES
+  DRINK
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model MenuItem {
+  id           String      @id @default(cuid())
+  name         String
+  slug         String      @unique
+  description  String
+  priceBgn     Decimal     @db.Decimal(10, 2)
+  portionGrams Int
+  category     Category
+  imagePath    String
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  orderItems   OrderItem[]
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  customer   String
+  status     OrderStatus @default(PENDING)
+  totalBgn   Decimal     @db.Decimal(10, 2)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  items      OrderItem[]
+}
+
+model OrderItem {
+  id         String   @id @default(cuid())
+  orderId    String
+  menuItemId String
+  quantity   Int
+  unitPrice  Decimal  @db.Decimal(10, 2)
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+
+  @@index([orderId])
+}
