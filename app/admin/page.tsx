@@ -1,4 +1,3 @@
-import { Header } from "@/components/Header";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { getAdminSession } from "@/lib/auth";
 import { getPrisma } from "@/lib/prisma";
@@ -26,32 +25,29 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <>
-      <Header adminName={session.username} />
-      <AdminDashboard
-        username={session.username}
-        items={items.map((item) => ({
-          id: item.id,
-          name: item.name,
-          description: item.description,
-          priceBgn: Number(item.priceBgn),
-          category: item.category,
-          imagePath: item.imagePath,
-          isActive: item.isActive,
-        }))}
-        orders={orders.map((order) => ({
-          id: order.id,
-          customer: order.customer,
-          status: order.status,
-          totalBgn: Number(order.totalBgn),
-          createdAt: order.createdAt.toISOString(),
-          items: order.items.map((line) => ({
-            name: line.menuItem.name,
-            quantity: line.quantity,
-            unitPrice: Number(line.unitPrice),
-          })),
-        }))}
-      />
-    </>
+    <AdminDashboard
+      username={session.username}
+      items={items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        priceBgn: Number(item.priceBgn),
+        category: item.category,
+        imagePath: item.imagePath,
+        isActive: item.isActive,
+      }))}
+      orders={orders.map((order) => ({
+        id: order.id,
+        customer: order.customer,
+        status: order.status,
+        totalBgn: Number(order.totalBgn),
+        createdAt: order.createdAt.toISOString(),
+        items: order.items.map((line) => ({
+          name: line.menuItem.name,
+          quantity: line.quantity,
+          unitPrice: Number(line.unitPrice),
+        })),
+      }))}
+    />
   );
 }

@@ -1,37 +1,60 @@
 import type { Metadata } from "next";
-import { Bungee, Figtree, Special_Elite } from "next/font/google";
+import { Chela_One, Cuprum, Kelly_Slab, Lobster } from "next/font/google";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
+import { getAdminSession } from "@/lib/auth";
 import "./globals.css";
 
-const bungee = Bungee({
-  weight: "400",
+const cuprum = Cuprum({
   subsets: ["latin"],
-  variable: "--font-bungee",
+  weight: ["500", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-cuprum",
 });
 
-const figtree = Figtree({
-  subsets: ["latin"],
-  variable: "--font-figtree",
-});
-
-const specialElite = Special_Elite({
+const lobster = Lobster({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-special-elite",
+  variable: "--font-lobster",
+});
+
+const chela = Chela_One({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-chela",
+});
+
+const kelly = Kelly_Slab({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-kelly",
 });
 
 export const metadata: Metadata = {
-  title: "BurgerMasters — Sofia grill counter",
+  title: "BurgerMasters",
   description:
-    "Black Angus burgers, fries, and fountain drinks. Original BurgerMasters menu rebuilt for the web.",
+    "BurgerMasters grill — burgers, fries, and drinks from the original shop.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const session = await getAdminSession();
+
   return (
     <html
       lang="en"
-      className={`${bungee.variable} ${figtree.variable} ${specialElite.variable} h-full antialiased`}
+      className={`${cuprum.variable} ${lobster.variable} ${chela.variable} ${kelly.variable}`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        />
+      </head>
+      <body>
+        <Header adminName={session?.username} />
+        <div className="bm-container">{children}</div>
+        <Footer />
+      </body>
     </html>
   );
 }

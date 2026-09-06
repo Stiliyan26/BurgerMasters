@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import {
   logoutAction,
@@ -37,89 +36,83 @@ export function AdminDashboard({
   orders: AdminOrder[];
 }) {
   return (
-    <main className="mx-auto max-w-6xl space-y-10 px-4 py-8">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="font-[family-name:var(--font-ticket)] text-xs tracking-[0.24em] text-mustard">
-            SIGNED IN AS {username.toUpperCase()}
-          </p>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl text-cream">
-            Kitchen board
-          </h1>
+    <>
+      <section id="orders-container">
+        <div className="admin-top">
+          <h1 className="admin-heading">Orders — {username}</h1>
+          <form action={logoutAction}>
+            <button className="logout-btn" type="submit">
+              Logout <i className="fa-solid fa-right-from-bracket" />
+            </button>
+          </form>
         </div>
-        <form action={logoutAction}>
-          <button className="border border-mustard/40 px-4 py-2 text-mustard">
-            Log out
-          </button>
-        </form>
+
+        <div className="order-info-row">
+          <p className="order-column-name">Id</p>
+          <p className="order-column-name">Customer</p>
+          <p className="order-column-name">Date</p>
+          <p className="order-column-name">Price</p>
+          <p className="order-column-name">Action</p>
+        </div>
+
+        {orders.length === 0 ? (
+          <p className="admin-heading">No orders yet.</p>
+        ) : (
+          orders.map((order, index) => (
+            <OrderCard key={order.id} order={order} index={index} />
+          ))
+        )}
+      </section>
+
+      <h2 className="admin-heading">Menu</h2>
+      <div className="menu-editor-list">
+        {items.map((item) => (
+          <MenuEditor key={item.id} item={item} />
+        ))}
       </div>
-
-      <section>
-        <h2 className="mb-4 font-[family-name:var(--font-display)] text-2xl text-mustard">
-          Incoming tickets
-        </h2>
-        <div className="space-y-4">
-          {orders.length === 0 ? (
-            <p className="text-cream/70">No orders yet.</p>
-          ) : (
-            orders.map((order) => <OrderCard key={order.id} order={order} />)
-          )}
-        </div>
-      </section>
-
-      <section>
-        <h2 className="mb-4 font-[family-name:var(--font-display)] text-2xl text-mustard">
-          Menu
-        </h2>
-        <div className="grid gap-4">
-          {items.map((item) => (
-            <MenuEditor key={item.id} item={item} />
-          ))}
-        </div>
-      </section>
-    </main>
+    </>
   );
 }
 
-function OrderCard({ order }: { order: AdminOrder }) {
+function OrderCard({ order, index }: { order: AdminOrder; index: number }) {
   return (
-    <article className="ticket rounded-sm p-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="font-[family-name:var(--font-ticket)] text-xs text-smoke">
-            {new Date(order.createdAt).toLocaleString("bg-BG")}
-          </p>
-          <h3 className="text-lg font-semibold">{order.customer}</h3>
-        </div>
-        <span className="stamp px-2 py-1 font-[family-name:var(--font-ticket)] text-sm text-ember">
-          {order.status} · {order.totalBgn.toFixed(2)} BGN
-        </span>
-      </div>
-      <ul className="mt-3 text-sm text-smoke">
-        {order.items.map((item) => (
-          <li key={`${order.id}-${item.name}`}>
-            {item.quantity} × {item.name} ({item.unitPrice.toFixed(2)} BGN)
-          </li>
-        ))}
-      </ul>
+    <section
+      className="order-info"
+      style={{
+        animationDelay: `${index * 0.2}s`,
+        backgroundPosition: `50% ${30 + index * 10}%`,
+      }}
+    >
+      <p className="order-id">{order.id.slice(-8)}</p>
+      <p className="order-username">{order.customer}</p>
+      <p className="order-date">
+        {new Date(order.createdAt).toLocaleString("bg-BG")}
+      </p>
+      <p className="order-price">{order.totalBgn.toFixed(2)} lv.</p>
       <form
         action={async (formData) => {
           await updateOrderStatusAction(formData);
         }}
-        className="mt-3 flex flex-wrap gap-2"
       >
         <input type="hidden" name="id" value={order.id} />
-        <button name="status" value="ACCEPTED" className="bg-ink px-3 py-1.5 text-cream">
-          Accept
-        </button>
-        <button name="status" value="REJECTED" className="bg-ember px-3 py-1.5 text-cream">
-          Reject
-        </button>
-        <button name="status" value="PENDING" className="border border-ink/30 px-3 py-1.5">
-          Hold
-        </button>
+        <div className="order-btns">
+          {order.status === "PENDING" ? (
+            <>
+              <button className="accept" name="status" value="ACCEPTED">
+                Accept
+              </button>
+              <button className="decline" name="status" value="REJECTED">
+                Decline
+              </button>
+            </>
+          ) : (
+            <button className="ordered" type="button">
+              {order.status}
+            </button>
+          )}
+        </div>
       </form>
-    </article>
+    </section>
   );
 }
 
@@ -132,52 +125,37 @@ function MenuEditor({ item }: { item: AdminItem }) {
   }
 
   return (
-    <form
-      action={onSubmit}
-      className="grid gap-3 rounded-sm border border-mustard/20 bg-black/20 p-4 md:grid-cols-[96px_1fr_auto]"
-    >
+    <form action={onSubmit} className="menu-editor">
       <input type="hidden" name="id" value={item.id} />
-      <div className="relative h-24 w-24 overflow-hidden bg-ink">
-        <Image src={item.imagePath} alt={item.name} fill className="object-cover" />
+      <img src={item.imagePath} alt={item.name} />
+      <div>
+        <p className="label">
+          {item.category} — {item.name}
+        </p>
+        <label className="label">
+          Description
+          <textarea name="description" defaultValue={item.description} rows={4} />
+        </label>
+        {notice ? <p className="err-msg">{notice}</p> : null}
       </div>
       <div>
-        <p className="font-[family-name:var(--font-ticket)] text-xs text-mustard">
-          {item.category}
-        </p>
-        <h3 className="font-semibold text-cream">{item.name}</h3>
-        <textarea
-          name="description"
-          defaultValue={item.description}
-          rows={3}
-          className="mt-2 w-full bg-cream px-2 py-1 text-sm text-ink"
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <label className="text-sm text-cream">
-          Price BGN
+        <label className="label">
+          Price
           <input
             name="priceBgn"
             type="number"
             step="0.01"
             min="0.01"
             defaultValue={item.priceBgn}
-            className="mt-1 w-full bg-cream px-2 py-1 text-ink"
           />
         </label>
-        <label className="flex items-center gap-2 text-sm text-cream">
-          <input
-            name="isActive"
-            type="checkbox"
-            defaultChecked={item.isActive}
-          />
+        <label className="active-row">
+          <input name="isActive" type="checkbox" defaultChecked={item.isActive} />
           On the board
         </label>
-        <button className="bg-mustard py-2 font-semibold text-ink">Save</button>
-        {notice ? (
-          <p className="font-[family-name:var(--font-ticket)] text-xs text-cream/80">
-            {notice}
-          </p>
-        ) : null}
+        <button className="submit-btn" type="submit">
+          Submit
+        </button>
       </div>
     </form>
   );

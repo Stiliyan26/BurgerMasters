@@ -1,45 +1,94 @@
 import Link from "next/link";
 
-export function Header({
-  adminName,
-}: {
-  adminName?: string | null;
-}) {
+const menuItems = [
+  {
+    name: "Burgers",
+    href: "/#burgers",
+    icon: "fa-solid fa-burger",
+    color: "#995900",
+  },
+  {
+    name: "Fries",
+    href: "/#fries",
+    icon: "fa-solid fa-utensils",
+    color: "#b8b100",
+  },
+  {
+    name: "Drinks",
+    href: "/#drinks",
+    icon: "fa-solid fa-glass-water",
+    color: "#9d0101",
+  },
+];
+
+export function Header({ adminName }: { adminName?: string | null }) {
   return (
-    <header className="sticky top-0 z-20 border-b border-mustard/25 bg-walnut/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-        <Link href="/" className="min-w-0">
-          <p className="font-[family-name:var(--font-ticket)] text-xs tracking-[0.28em] text-mustard">
-            OPEN LATE · SOFIA
-          </p>
-          <h1 className="truncate font-[family-name:var(--font-display)] text-xl text-cream sm:text-2xl">
-            BurgerMasters
-          </h1>
+    <header id="header">
+      <nav className="nav">
+        <Link href="/">
+          <img
+            className="logo"
+            src="/images/logo/logo.png"
+            alt="Burger logo"
+          />
         </Link>
-        <nav className="flex items-center gap-3 text-sm">
-          <Link
-            href="/#burgers"
-            className="hidden text-cream/80 hover:text-mustard sm:inline"
-          >
-            Menu
-          </Link>
+
+        <ul className="list">
+          <li className="list-item">
+            <Link href="/">
+              Home <i className="fa-solid fa-house" />
+            </Link>
+          </li>
+
+          <li className="list-item">
+            <Link href="/#burgers">
+              <div className="menu">
+                <p className="menu-title">Menu</p>
+                <i className="fa-solid fa-bars" />
+              </div>
+            </Link>
+            <ul className="menu-dropdown">
+              {menuItems.map((item) => (
+                <li key={item.name} className="menu-item">
+                  <Link href={item.href}>
+                    {item.name}{" "}
+                    <i className={item.icon} style={{ color: item.color }} />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </li>
+
+          <li className="list-item">
+            <Link href="/#cart" className="cart-container">
+              Cart{" "}
+              <i
+                className="fa-solid fa-cart-shopping"
+                style={{ color: "#d5d9de" }}
+              />
+            </Link>
+          </li>
+
           {adminName ? (
-            <Link
-              href="/admin"
-              className="rounded-full bg-mustard px-3 py-1.5 font-semibold text-ink"
-            >
-              Kitchen
-            </Link>
+            <>
+              <li className="list-item">
+                <Link href="/admin" className="create">
+                  Orders <i className="fa-solid fa-clipboard-list" />
+                </Link>
+              </li>
+              <li className="list-item">
+                <Link href="/admin">Hello, {adminName}!</Link>
+              </li>
+            </>
           ) : (
-            <Link
-              href="/login"
-              className="rounded-full border border-mustard/50 px-3 py-1.5 text-mustard hover:bg-mustard hover:text-ink"
-            >
-              Admin
-            </Link>
+            <li className="list-item">
+              <Link href="/login">
+                Login <i className="fa-solid fa-right-to-bracket" />
+              </Link>
+            </li>
           )}
-        </nav>
-      </div>
+        </ul>
+      </nav>
     </header>
   );
 }

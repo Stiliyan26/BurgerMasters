@@ -1,4 +1,3 @@
-import { Header } from "@/components/Header";
 import { LoginForm } from "@/components/LoginForm";
 import { getAdminSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -16,12 +15,5 @@ export default async function LoginPage({
     redirect(nextPath);
   }
 
-  return (
-    <>
-      <Header />
-      <main className="flex flex-1 items-center px-4 py-16">
-        <LoginForm nextPath={nextPath} />
-      </main>
-    </>
-  );
+  return <LoginForm nextPath={nextPath} />;
 }
