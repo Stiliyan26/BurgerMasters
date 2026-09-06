@@ -1,6 +1,4 @@
-# BurgerMasters (Next.js rewrite — not the live app)
-
-This folder is an abandoned Next.js rewrite. **Do not deploy or iterate it.**
+# BurgerMasters 
 
 The original restaurant app is two repos:
 
